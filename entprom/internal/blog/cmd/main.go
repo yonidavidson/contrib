@@ -1,17 +1,3 @@
-// Copyright 2019-present Facebook
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package main
 
 import (
@@ -20,16 +6,17 @@ import (
 	"log"
 	"net/http"
 
-	"entgo.io/contrib/entprom"
+	"entgo.io/contrib/entprom/internal/blog/entprom"
 	"entgo.io/contrib/entprom/internal/ent"
 	_ "entgo.io/contrib/entprom/internal/ent/runtime"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var client *ent.Client
 
-func initDB() *ent.Client {
+func initClient() {
 	client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
 	if err != nil {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
@@ -39,8 +26,8 @@ func initDB() *ent.Client {
 	if err := client.Schema.Create(ctx); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-
-	return client
+	constLabels := prometheus.Labels{"environment": "blog"}
+	client.Use(entprom.Hook(constLabels))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -65,10 +52,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	client = initDB()
-	client.Use(entprom.Hook(
-		entprom.Labels(map[string]string{"environment": "dev"}),
-	))
+	initClient()
 	http.HandleFunc("/", handler)
 	http.Handle("/metrics", promhttp.Handler())
 	log.Println("server starting on port 8080")
