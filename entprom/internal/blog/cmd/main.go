@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,45 +15,41 @@ import (
 
 var client *ent.Client
 
-func initClient() {
-	client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+func createEntClientAndMigrate() *ent.Client {
+	c, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
 	if err != nil {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
 	ctx := context.Background()
 	// Run the auto migration tool.
-	if err := client.Schema.Create(ctx); err != nil {
+	if err := c.Schema.Create(ctx); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-	constLabels := prometheus.Labels{"environment": "blog"}
-	client.Use(entprom.Hook(constLabels))
+	return c
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	// Run operations.
-	a8m, err := client.User.Create().SetName("a8m").Save(ctx)
+	_, err := client.User.Create().SetName("a8m").Save(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	root, err := client.File.Create().SetName("/").SetOwner(a8m).Save(ctx)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	_, err = client.File.Create().SetName("dev").SetParent(root).Save(ctx)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	fmt.Fprintf(w, "check the metrics")
 }
 
 func main() {
-	initClient()
+	// Create Ent client and migrate
+	client = createEntClientAndMigrate()
+	// Define const labels with our metrics
+	constLabels := prometheus.Labels{"environment": "blog"}
+	// Use the hook
+	client.Use(entprom.Hook(constLabels))
+	// Simple handler to run actions on our DB.
 	http.HandleFunc("/", handler)
+	// This endpoint sends metrics to the prometheus to collect
 	http.Handle("/metrics", promhttp.Handler())
 	log.Println("server starting on port 8080")
+	// Run the server
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

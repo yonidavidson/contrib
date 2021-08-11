@@ -9,6 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+//Ent dynamic dimensions
 const (
 	mutationType = "mutation_type"
 	mutationOp   = "mutation_op"
@@ -16,6 +17,7 @@ const (
 
 var entLabels = []string{mutationType, mutationOp}
 
+// Create collector for total operations counter
 func initOpsProcessedTotal(constLabels prometheus.Labels) *prometheus.CounterVec {
 	return promauto.NewCounterVec(
 		prometheus.CounterOpts{
@@ -27,6 +29,7 @@ func initOpsProcessedTotal(constLabels prometheus.Labels) *prometheus.CounterVec
 	)
 }
 
+// Create collector for error counter
 func initOpsProcessedError(constLabels prometheus.Labels) *prometheus.CounterVec {
 	return promauto.NewCounterVec(
 		prometheus.CounterOpts{
@@ -38,6 +41,7 @@ func initOpsProcessedError(constLabels prometheus.Labels) *prometheus.CounterVec
 	)
 }
 
+// Create collector for duration histogram collector
 func initOpsDuration(constLabels prometheus.Labels) *prometheus.HistogramVec {
 	return promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
@@ -49,6 +53,7 @@ func initOpsDuration(constLabels prometheus.Labels) *prometheus.HistogramVec {
 	)
 }
 
+// Hook init collectors, count total at beginning error on mutation error and duration also after.
 func Hook(constLabels prometheus.Labels) ent.Hook {
 	opsProcessedTotal := initOpsProcessedTotal(constLabels)
 	opsProcessedError := initOpsProcessedError(constLabels)
