@@ -188,6 +188,7 @@ func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 			return nil, err
 		}
 	}
+	ex.hooks = append(ex.hooks, RemoveOldGeneratedFiles("gql_"))
 	return ex, nil
 }
 
@@ -468,3 +469,25 @@ var (
 	_     entc.Extension = (*Extension)(nil)
 	camel                = gen.Funcs["camel"].(func(string) string)
 )
+
+// RemoveOldGeneratedFiles removes old generated files without gql
+func RemoveOldGeneratedFiles(prefix string) gen.Hook {
+	return func(next gen.Generator) gen.Generator {
+		return gen.GenerateFunc(func(g *gen.Graph) error {
+			for _, template := range g.Templates {
+				oldName := strings.TrimPrefix(template.Name(), prefix)
+				oldTemplate := template.Lookup(oldName)
+				if oldTemplate != nil {
+					pwd, _ := os.Getwd()
+					location := pwd + strings.TrimPrefix(oldName,"template")
+					fileName := strings.ReplaceAll(location,"tmpl","go")
+					err := os.Remove(fileName)
+					if err != nil {
+						//panic(fileName)
+					}
+				}
+			}
+			return next.Generate(g)
+		})
+	}
+}
