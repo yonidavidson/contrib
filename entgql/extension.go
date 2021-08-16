@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
+	tparse "text/template/parse"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"entgo.io/ent/schema/field"
@@ -474,18 +474,33 @@ var (
 func RemoveOldGeneratedFiles(prefix string) gen.Hook {
 	return func(next gen.Generator) gen.Generator {
 		return gen.GenerateFunc(func(g *gen.Graph) error {
-			for _, template := range g.Templates {
-				oldName := strings.TrimPrefix(template.Name(), prefix)
-				oldTemplate := template.Lookup(oldName)
-				if oldTemplate != nil {
-					pwd, _ := os.Getwd()
-					location := pwd + strings.TrimPrefix(oldName,"template")
-					fileName := strings.ReplaceAll(location,"tmpl","go")
-					err := os.Remove(fileName)
-					if err != nil {
-						//panic(fileName)
+			for _, rootTemplate := range AllTemplates {
+				for _, template := range rootTemplate.Templates() {
+					if tparse.IsEmptyTree(template.Root) {
+						continue
+					}
+					fmt.Println(rootTemplate.Name(), "->", template.Name())
+					//target := g.Target // find target path
+					// oldName := calculate - remove prefix
+					for _,node := range g.Nodes{
+						// do this before checking template name
+						node.Name == oldName
+						// ignore
 					}
 				}
+
+				// fmt.Println(template.Name())
+				// oldName := strings.TrimPrefix(template.Name(), prefix)
+				// oldTemplate := template.Lookup(oldName)
+				// if oldTemplate != nil {
+				// 	pwd, _ := os.Getwd()
+				// 	location := pwd + strings.TrimPrefix(oldName, "template")
+				// 	fileName := strings.ReplaceAll(location, "tmpl", "go")
+				// 	err := os.Remove(fileName)
+				// 	if err != nil {
+				// 		//panic(fileName)
+				// 	}
+				// }
 			}
 			return next.Generate(g)
 		})
