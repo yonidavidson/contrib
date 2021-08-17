@@ -22,8 +22,9 @@ func removeOldGeneratedFiles() gen.Hook {
 						continue
 					}
 					name := strings.TrimPrefix(template.Name(), "gql_")
-					if deleteByName(g, name) != nil {
-						log.Info("deleted gql file with old name: ", name)
+					err := deleteByName(g, name)
+					if err != nil {
+						log.Error(err)
 					}
 				}
 			}
@@ -42,8 +43,5 @@ func deleteByName(g *gen.Graph, name string) error {
 	if !os.IsNotExist(err) {
 		return err
 	}
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 	return nil
 }
