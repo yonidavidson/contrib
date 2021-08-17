@@ -188,7 +188,7 @@ func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 			return nil, err
 		}
 	}
-	ex.hooks = append(ex.hooks, RemoveOldGeneratedFiles())
+	ex.hooks = append(ex.hooks, removeOldGeneratedFiles())
 	return ex, nil
 }
 

@@ -10,8 +10,7 @@ import (
 	"github.com/prometheus/common/log"
 )
 
-// RemoveOldGeneratedFiles removes old generated files without gql
-func RemoveOldGeneratedFiles() gen.Hook {
+func removeOldGeneratedFiles() gen.Hook {
 	return func(next gen.Generator) gen.Generator {
 		return gen.GenerateFunc(func(g *gen.Graph) error {
 			for _, rootTemplate := range AllTemplates {
@@ -24,7 +23,7 @@ func RemoveOldGeneratedFiles() gen.Hook {
 					}
 					name := strings.TrimPrefix(template.Name(), "gql_")
 					if deleteByName(g, name) != nil {
-						log.Info("deleted ", name)
+						log.Info("deleted gql file with old name: ", name)
 					}
 				}
 			}
