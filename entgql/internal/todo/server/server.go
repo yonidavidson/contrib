@@ -28,7 +28,7 @@ import (
 	"go.uber.org/zap"
 
 	_ "entgo.io/contrib/entgql/internal/todo/ent/runtime"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -40,8 +40,7 @@ func main() {
 
 	log, _ := zap.NewDevelopment()
 	client, err := ent.Open(
-		"sqlite3",
-		"file:ent?mode=memory&cache=shared&_fk=1",
+		"mysql", "yonidavidson@tcp(127.0.0.1:3306)/playground",
 	)
 	if err != nil {
 		log.Fatal("opening ent client", zap.Error(err))
@@ -49,6 +48,9 @@ func main() {
 	if err := client.Schema.Create(
 		context.Background(),
 		migrate.WithGlobalUniqueID(true),
+		migrate.WithForeignKeys(false),
+		// migrate.WithDropIndex(true),
+		// migrate.WithDropColumn(true),
 	); err != nil {
 		log.Fatal("running schema migration", zap.Error(err))
 	}

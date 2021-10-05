@@ -27,7 +27,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "text", Type: field.TypeString, Size: 2147483647},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"ENABLED", "DISABLED"}},
-		{Name: "config", Type: field.TypeOther, Nullable: true, SchemaType: map[string]string{"sqlite3": "json"}},
+		{Name: "config", Type: field.TypeOther, Nullable: true, SchemaType: map[string]string{"mysql": "json"}},
 		{Name: "duration", Type: field.TypeInt64, Nullable: true},
 	}
 	// CategoriesTable holds the schema information for the "categories" table.

@@ -46,7 +46,7 @@ func (Category) Fields() []ent.Field {
 			),
 		field.Other("config", &schematype.CategoryConfig{}).
 			SchemaType(map[string]string{
-				dialect.SQLite: "json",
+				dialect.MySQL: "json",
 			}).
 			Optional(),
 		field.Int64("duration").
