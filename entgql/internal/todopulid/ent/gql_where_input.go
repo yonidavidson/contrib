@@ -20,10 +20,11 @@ import (
 	"fmt"
 	"time"
 
-	"entgo.io/contrib/entgql/internal/todo/ent/category"
-	"entgo.io/contrib/entgql/internal/todo/ent/predicate"
 	"entgo.io/contrib/entgql/internal/todo/ent/schema/schematype"
-	"entgo.io/contrib/entgql/internal/todo/ent/todo"
+	"entgo.io/contrib/entgql/internal/todopulid/ent/category"
+	"entgo.io/contrib/entgql/internal/todopulid/ent/predicate"
+	"entgo.io/contrib/entgql/internal/todopulid/ent/schema/pulid"
+	"entgo.io/contrib/entgql/internal/todopulid/ent/todo"
 )
 
 // CategoryWhereInput represents a where input for filtering Category queries.
@@ -33,14 +34,14 @@ type CategoryWhereInput struct {
 	And []*CategoryWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "text" field predicates.
 	Text             *string  `json:"text,omitempty"`
@@ -86,6 +87,18 @@ type CategoryWhereInput struct {
 	DurationLTE    *time.Duration  `json:"durationLTE,omitempty"`
 	DurationIsNil  bool            `json:"durationIsNil,omitempty"`
 	DurationNotNil bool            `json:"durationNotNil,omitempty"`
+
+	// "count" field predicates.
+	Count       *uint64  `json:"count,omitempty"`
+	CountNEQ    *uint64  `json:"countNEQ,omitempty"`
+	CountIn     []uint64 `json:"countIn,omitempty"`
+	CountNotIn  []uint64 `json:"countNotIn,omitempty"`
+	CountGT     *uint64  `json:"countGT,omitempty"`
+	CountGTE    *uint64  `json:"countGTE,omitempty"`
+	CountLT     *uint64  `json:"countLT,omitempty"`
+	CountLTE    *uint64  `json:"countLTE,omitempty"`
+	CountIsNil  bool     `json:"countIsNil,omitempty"`
+	CountNotNil bool     `json:"countNotNil,omitempty"`
 
 	// "todos" edge predicates.
 	HasTodos     *bool             `json:"hasTodos,omitempty"`
@@ -286,6 +299,36 @@ func (i *CategoryWhereInput) P() (predicate.Category, error) {
 	if i.DurationNotNil {
 		predicates = append(predicates, category.DurationNotNil())
 	}
+	if i.Count != nil {
+		predicates = append(predicates, category.CountEQ(*i.Count))
+	}
+	if i.CountNEQ != nil {
+		predicates = append(predicates, category.CountNEQ(*i.CountNEQ))
+	}
+	if len(i.CountIn) > 0 {
+		predicates = append(predicates, category.CountIn(i.CountIn...))
+	}
+	if len(i.CountNotIn) > 0 {
+		predicates = append(predicates, category.CountNotIn(i.CountNotIn...))
+	}
+	if i.CountGT != nil {
+		predicates = append(predicates, category.CountGT(*i.CountGT))
+	}
+	if i.CountGTE != nil {
+		predicates = append(predicates, category.CountGTE(*i.CountGTE))
+	}
+	if i.CountLT != nil {
+		predicates = append(predicates, category.CountLT(*i.CountLT))
+	}
+	if i.CountLTE != nil {
+		predicates = append(predicates, category.CountLTE(*i.CountLTE))
+	}
+	if i.CountIsNil {
+		predicates = append(predicates, category.CountIsNil())
+	}
+	if i.CountNotNil {
+		predicates = append(predicates, category.CountNotNil())
+	}
 
 	if i.HasTodos != nil {
 		p := category.HasTodos()
@@ -307,7 +350,7 @@ func (i *CategoryWhereInput) P() (predicate.Category, error) {
 	}
 	switch len(predicates) {
 	case 0:
-		return nil, fmt.Errorf("entgo.io/contrib/entgql/internal/todo/ent: empty predicate CategoryWhereInput")
+		return nil, fmt.Errorf("entgo.io/contrib/entgql/internal/todopulid/ent: empty predicate CategoryWhereInput")
 	case 1:
 		return predicates[0], nil
 	default:
@@ -322,14 +365,14 @@ type TodoWhereInput struct {
 	And []*TodoWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -624,7 +667,7 @@ func (i *TodoWhereInput) P() (predicate.Todo, error) {
 	}
 	switch len(predicates) {
 	case 0:
-		return nil, fmt.Errorf("entgo.io/contrib/entgql/internal/todo/ent: empty predicate TodoWhereInput")
+		return nil, fmt.Errorf("entgo.io/contrib/entgql/internal/todopulid/ent: empty predicate TodoWhereInput")
 	case 1:
 		return predicates[0], nil
 	default:
