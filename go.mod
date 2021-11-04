@@ -7,9 +7,8 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/AlekSi/pointer v1.1.0
 	github.com/agnivade/levenshtein v1.1.0 // indirect
-	github.com/alecthomas/kong v0.2.11
+	github.com/alecthomas/kong v0.2.18
 	github.com/go-openapi/inflect v0.19.0
-	github.com/google/addlicense v1.0.0 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/graphql-go/graphql v0.7.10-0.20210411022516-8a92e977c10b
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -32,7 +31,5 @@ require (
 	golang.org/x/tools v0.1.5
 	google.golang.org/genproto v0.0.0-20210303154014-9728d6b83eeb // indirect
 	google.golang.org/grpc v1.36.0
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	google.golang.org/protobuf v1.27.1
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )
